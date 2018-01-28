@@ -11,6 +11,12 @@
 from beagle_py import *
 import datetime
 
+# add our libs
+sys.path.append('../lib')
+
+# import packet logger
+import packetlogger
+
 #==========================================================================
 # GLOBALS
 #==========================================================================
@@ -124,6 +130,8 @@ hci_packet_sop  = 0;
 control_endpoint =   -1;
 interrupt_endpoint = -1;
 
+hci_dump_fout = -1
+
 def hex_for_packet(packet):
     result = ""
     for n in range(len(packet)):
@@ -132,16 +140,23 @@ def hex_for_packet(packet):
 
 def bluetooth_dump_packet(type, packet):
     global hci_packet_sop
-    time_obj = datetime.datetime( 2000, 1, 1 ) + datetime.timedelta( 0, 0, 0, hci_packet_sop / 1000000 )
-    time = time_obj.time().strftime("%H:%M:%S:%f")[:-3]
-    print('[%s] %s %s' % (time, type, hex_for_packet(packet)))
+    global hci_dump_fout
+
+    # output in BTstack's text format
+    # time_obj = datetime.datetime( 2000, 1, 1 ) + datetime.timedelta( 0, 0, 0, hci_packet_sop / 1000000 )
+    # time = time_obj.time().strftime("%H:%M:%S:%f")[:-3]
+    # print('[%s] %s %s' % (time, type, hex_for_packet(packet)))
+
+    # output in PacketLogger format
+    timestamp = hci_packet_sop / 1000000000.0
+    packetlogger.dump_packet(hci_dump_fout, timestamp, type, packet)
 
 def bluetooth_process_cmd_out(data, length):
     global cmd_out_buffer
     cmd_out_buffer = cmd_out_buffer + data
     command_length = 3 + cmd_out_buffer[2]
     if command_length <= len(cmd_out_buffer):
-        bluetooth_dump_packet('CMD =>', cmd_out_buffer)
+        bluetooth_dump_packet(0, cmd_out_buffer)
         cmd_out_buffer   = array_u08(0)
 
 def bluetooth_process_event_in(data, length):
@@ -151,7 +166,7 @@ def bluetooth_process_event_in(data, length):
         return
     acl_length = 2 + event_in_buffer[1]
     if acl_length <= len(event_in_buffer):
-        bluetooth_dump_packet('EVT <=', event_in_buffer)
+        bluetooth_dump_packet(1, event_in_buffer)
         event_in_buffer = array_u08(0)
 
 def bluetooth_process_acl_out(data, length):
@@ -161,7 +176,7 @@ def bluetooth_process_acl_out(data, length):
         return
     acl_length = 4 + acl_out_buffer[2] + acl_out_buffer[3] * 256
     if acl_length <= len(acl_out_buffer):
-        bluetooth_dump_packet('ACL =>', acl_out_buffer)
+        bluetooth_dump_packet(2, acl_out_buffer)
         acl_out_buffer   = array_u08(0)
 
 def bluetooth_process_acl_in(data, length):
@@ -171,7 +186,7 @@ def bluetooth_process_acl_in(data, length):
         return
     acl_length = 4 + acl_in_buffer[1]
     if acl_length <= len(acl_in_buffer):
-        bluetooth_dump_packet('ACL <=', acl_out_buffer)
+        bluetooth_dump_packet(3, acl_out_buffer)
         acl_in_buffer = array_u08(0)
 
 def bluetooth_process_usb_packet(time_sop, packet, length):
@@ -297,7 +312,7 @@ def usb_trigger (pid):
             (pid != BG_USB_PID_NAK))
 
 # The main packet dump routine
-def usbdump ():
+def usbdump():
     timing_size = bg_bit_timing_size(BG_PROTOCOL_USB, 1024)
 
     count_sop    = 0
@@ -488,7 +503,10 @@ bg_target_power(beagle, BG_TARGET_POWER_OFF)
 print ""
 sys.stdout.flush()
 
-usbdump()
+# open hci_dump.pklg
+with open ('hci_dump.pklg', 'wb') as fout:
+    hci_dump_fout = fout
+    usbdump()
 
 # Close the device
 bg_close(beagle)

@@ -6,12 +6,18 @@ Plug the USB Bluetooth Controller into the Beagle as usual and connect it to you
 
 ## How to use it
 
-	./capture_bluetooth_usb.py
+Depending on your Beagle device, you either start the script for the Beagle 12
 
-It will capture HCI traffic and save it to hci_dump.pklg in the current directory.
+	./capture_bluetooth_beagle12.py
+
+or the script for Beagle 480 and 5000
+
+	./capture_bluetooth_beagle480_5000.py
+
+It will capture the HCI traffic and save it to hci_dump.pklg in the current directory.
 Press Control-C to stop capturing. 
 
-## How to analyzer packet log
+## How to analyze packet log
 
 The resulting file can be analyzed with Wireshark or the Apple's PacketLogger tool.
 

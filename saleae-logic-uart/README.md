@@ -17,7 +17,11 @@ Capture a trace of the Bluetooth communication in the Logic app as usual. Then, 
 - All samples
 - CSV
 
-After saving, do
+![Export Settings in Logic](export_settings.png)
+
+At the moment, the script does not follow baud rate updates. Most Bluetooth Controllers use 115200 by default and the script uses this as the baudrate. If you're logging a faster connection, you can set your baudrat in [./process_traces.py](https://github.com/bluekitchen/bluetooth-logger/blob/master/saleae-logic-uart/process_trace.py#L205).
+
+Then, process the trace like this:
 
 	$ ./process_trace.py filename.csv
 
@@ -28,7 +32,3 @@ It will create filename.pklg in the current dircetory.
 - Oversampling of logic trace
 - Switch to .vcd format instead of .csv
 - Follow baud rate changes by decoding "HCI Local Information Event" and then detecting proprietary baud rate change commands
-
-
-
-

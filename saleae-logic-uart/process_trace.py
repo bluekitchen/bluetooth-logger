@@ -202,7 +202,7 @@ if len(sys.argv) > 2:
     outfile = sys.argv[2]
 
 # config
-baudrate = 1843200
+baudrate = 115200
 
 # with open(outfile, 'w') as fout:
 with open (outfile, 'wb') as fout:

@@ -4,5 +4,5 @@ This project collects different tools to capture Bluetooth HCI Packet Logs using
 
 Suppported Capture Tools:
 - [TotalPhase Beagle USB Protocol Analyzer series](totalphase-beagle-usb). For USB Bluetooth, the (smallest) Beagle USB 12 device is sufficient.
-- [Salea Logic Logic analyzer](salea-logic-uart) series to analyze UART trace
+- [Saleae Logic Logic analyzer](saleae-logic-uart) series to analyze UART trace
 - [Windows USBpcap](windows-usbpcap) to analyze USB traces on Windows.

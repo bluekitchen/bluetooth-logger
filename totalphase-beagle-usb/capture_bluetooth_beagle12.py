@@ -12,7 +12,7 @@ from beagle_py import *
 import datetime
 
 # add our libs
-sys.path.append('../lib')
+sys.path.append(os.path.abspath(os.path.dirname(sys.argv[0]) + '/../lib'))
 
 # import packet logger
 import packetlogger

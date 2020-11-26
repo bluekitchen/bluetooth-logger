@@ -9,8 +9,10 @@ import os
 import pcapng
 from pcapng.blocks import SectionHeader, InterfaceDescription, EnhancedPacket
 
-# Import our PacketLogger lib
-sys.path.append('../lib')
+# add our libs
+sys.path.append(os.path.abspath(os.path.dirname(sys.argv[0]) + '/../lib'))
+
+# import packet logger
 import packetlogger
 
 def as_hex(data):

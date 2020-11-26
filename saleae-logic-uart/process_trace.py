@@ -212,7 +212,7 @@ with open (outfile, 'wb') as fout:
         line = fin.readline()
         fields = line.strip().split(',')
         channels = fields[1:]
-        analyzers = [ uart_analyzer(name.strip(), baudrate, hci_h4_parser()) for name in channels];
+        analyzers = [ uart_analyzer(name.strip(), baudrate, hci_h4_parser()) for name in channels if not 'RTS' in name];
         for line in fin:
             fields = line.strip().split(',')
             timestamp = float(fields[0])

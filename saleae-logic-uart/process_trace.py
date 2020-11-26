@@ -39,6 +39,7 @@ class hci_h4_parser:
     data = bytearray()
     timestamp = 0
     incoming = False
+    detected = False
 
     def process_byte(self, timestamp, byte):
         if self.type == 0:
@@ -48,9 +49,19 @@ class hci_h4_parser:
             self.type = byte
             self.timestamp = timestamp
             self.data = bytearray()
-            if type == 0x04:
-                self.incoming = True
+
+            # auto-detect RX and TX lines
+            if not self.detected:
+                # - packet type == HCI Event   => Controller TX - Host RX
+                # - packet type == HCI Command => Controller RX - Host TX
+                if self.type == 0x04:
+                    self.detected = True
+                    self.incoming = True
+                if self.type == 0x01:
+                    self.detected = True
+                    self.incoming = False
             return
+
         self.data.append(byte)
 
     def packet_complete(self):
@@ -222,6 +233,8 @@ with open (outfile, 'wb') as fout:
                 parser = analyzer.hci_h4_parser
                 if parser.packet_complete():
                     packet_log_type = packetlogger.packet_log_type_for_hci_type_and_incoming(parser.type, parser.incoming)
+                    if parser.type == 2:
+                        print(parser.type, parser.incoming, packet_log_type, parser.timestamp, byte_to_str(parser.data))
                     packetlogger.dump_packet(fout, parser.timestamp, packet_log_type, parser.data)
                     parser.reset()
 

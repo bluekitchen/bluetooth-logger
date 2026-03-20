@@ -33,3 +33,4 @@ It will create filename.pklg in the current dircetory. The .pklg file can be ope
 - Oversampling of logic trace
 - Switch to .vcd format instead of .csv
 - Follow baud rate changes by decoding "HCI Local Information Event" and then detecting proprietary baud rate change commands
+
